@@ -1,0 +1,15 @@
+{
+  "name": "stage1-todo-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A dependency-free to-do app with localStorage persistence, filters and inline editing.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A fast, offline-friendly app for tasks and notes: filters, search, inline editing, no backend." />
+    <meta name="color-scheme" content="light dark" />
+    <title>Tasks &amp; Notes</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%9C%85</text></svg>"
+    />
+  </head>
+  <body>
+    <main class="app" id="app">
+      <header class="app__header">
+        <div class="app__heading">
+          <div>
+            <h1 class="app__title">Tasks &amp; Notes</h1>
+            <p class="app__subtitle">Everything is saved in your browser. No account, no server.</p>
+          </div>
+          <form class="theme" id="theme-form" autocomplete="off">
+            <label class="theme__label" for="theme-select">Theme</label>
+            <select class="theme__select" id="theme-select" name="theme">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </form>
+        </div>
+      </header>
+
+      <div class="tabs" id="tabs" role="tablist" aria-label="Choose a view">
+        <button
+          class="tab tab--active"
+          id="tab-tasks"
+          type="button"
+          role="tab"
+          data-view="tasks"
+          aria-controls="view-tasks"
+          aria-selected="true"
+        >
+          Tasks
+        </button>
+        <button
+          class="tab"
+          id="tab-notes"
+          type="button"
+          role="tab"
+          data-view="notes"
+          aria-controls="view-notes"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Notes
+        </button>
+      </div>
+
+      <section class="view" id="view-tasks" role="tabpanel" aria-labelledby="tab-tasks">
+        <form class="composer" id="new-todo-form" autocomplete="off">
+          <label class="visually-hidden" for="new-todo">What needs to be done?</label>
+          <input
+            class="composer__input"
+            id="new-todo"
+            name="title"
+            type="text"
+            placeholder="What needs to be done?"
+            maxlength="200"
+            required
+          />
+          <button class="button button--primary composer__submit" type="submit">Add</button>
+        </form>
+
+        <p class="error" id="input-error" role="alert" hidden>Please enter a title before adding.</p>
+
+        <p class="notice" id="storage-notice" hidden>
+          Your browser is blocking local storage, so your tasks and notes will disappear when you
+          close this tab.
+        </p>
+
+        <section class="panel" aria-labelledby="list-heading">
+          <h2 class="visually-hidden" id="list-heading">Your tasks</h2>
+
+          <div class="toolbar">
+            <label class="toggle-all" for="toggle-all">
+              <input class="toggle-all__input" id="toggle-all" type="checkbox" />
+              <span>Select all</span>
+            </label>
+
+            <div class="filters" id="filters" role="group" aria-label="Filter tasks">
+              <button class="filter" type="button" data-filter="all">All</button>
+              <button class="filter" type="button" data-filter="active">Active</button>
+              <button class="filter" type="button" data-filter="completed">Completed</button>
+            </div>
+          </div>
+
+          <ul class="todo-list" id="todo-list"></ul>
+
+          <p class="empty" id="empty-state">Nothing here yet. Add your first task above.</p>
+
+          <footer class="panel__footer">
+            <p class="count" id="items-left" aria-live="polite">0 tasks left</p>
+            <button class="button button--ghost" id="clear-completed" type="button">Clear completed</button>
+          </footer>
+        </section>
+
+        <p class="hint">
+          Tip: press <kbd>Enter</kbd> to add, double-click a task to edit, <kbd>Esc</kbd> to cancel,
+          and <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Z</kbd> to undo a deletion.
+        </p>
+      </section>
+
+      <section class="view" id="view-notes" role="tabpanel" aria-labelledby="tab-notes" hidden>
+        <h2 class="visually-hidden" id="notes-heading">Your notes</h2>
+
+        <form class="composer composer--stacked" id="new-note-form" autocomplete="off">
+          <label class="visually-hidden" for="new-note-title">Note title</label>
+          <input
+            class="composer__input"
+            id="new-note-title"
+            type="text"
+            placeholder="Note title (optional)"
+            maxlength="200"
+          />
+          <label class="visually-hidden" for="new-note-body">Note body</label>
+          <textarea
+            class="composer__input composer__textarea"
+            id="new-note-body"
+            rows="3"
+            placeholder="Write a note…"
+            maxlength="5000"
+          ></textarea>
+          <button class="button button--primary composer__submit" type="submit">Add note</button>
+        </form>
+
+        <p class="error" id="note-error" role="alert" hidden>
+          Write a title or a note body before adding.
+        </p>
+
+        <section class="panel" aria-labelledby="notes-heading">
+          <div class="toolbar">
+            <label class="visually-hidden" for="note-search">Search notes</label>
+            <input
+              class="composer__input search"
+              id="note-search"
+              type="search"
+              placeholder="Search notes…"
+            />
+            <p class="count" id="notes-count" aria-live="polite">No notes</p>
+          </div>
+
+          <div class="notes" id="notes-list"></div>
+
+          <p class="empty" id="notes-empty">No notes yet. Write your first note above.</p>
+        </section>
+
+        <p class="hint">
+          Tip: double-click a note to edit, <kbd>Esc</kbd> cancels an edit, and
+          <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Enter</kbd> adds a note.
+        </p>
+      </section>
+
+      <footer class="app__footer">
+        <div class="app__data">
+          <button class="button button--ghost" id="export-data" type="button">Export backup</button>
+          <button class="button button--ghost" id="import-data" type="button">Import backup</button>
+        </div>
+        <input
+          class="visually-hidden"
+          id="import-file"
+          type="file"
+          accept="application/json,.json"
+          tabindex="-1"
+        />
+        <p class="status" id="data-status" role="status"></p>
+      </footer>
+
+      <div class="toast" id="undo-toast" hidden>
+        <p class="toast__message" id="undo-message" role="status"></p>
+        <button class="button button--primary" id="undo-button" type="button">Undo</button>
+        <button class="button button--icon" id="undo-dismiss" type="button" aria-label="Dismiss">✕</button>
+      </div>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
