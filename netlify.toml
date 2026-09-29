@@ -1,0 +1,11 @@
+# Netlify deploys the repo root as-is: this app is dependency-free static
+# files (HTML + CSS + ES modules), so there is no build step.
+[build]
+  publish = "."
+  command = "npm test"
+
+# Cache immutable assets lightly; always revalidate the entry point.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
